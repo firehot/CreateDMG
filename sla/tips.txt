@@ -1,0 +1,5 @@
+1. hdiutil unflatten your_image_file.dmg
+
+2. Rez -a /tmp/sla.r -o your_image_file.dmg
+
+3. hdiutil flatten your_image_file.dmg
