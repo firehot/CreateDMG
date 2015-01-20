@@ -4,7 +4,7 @@ This script adds a license file to a DMG. Requires Xcode and a plain ascii text
 license file.
 Obviously only runs on a Mac.
 
-Copyright (C) 2011 Jared Hobbs
+Copyright (C) 2011-2013 Jared Hobbs
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,13 +55,10 @@ def main(options, args):
                 f.write('data \'TEXT\' (5002, "English") {\n')
                 for line in l:
                     if len(line) < 1000:
-                        f.write('    "' + line.strip().replace('"', '\\"') +
-                                '\\n"\n')
+                        f.write('    "' + escape(line) + '\\n"\n')
                     else:
                         for liner in line.split('.'):
-                            f.write('    "' +
-                                    liner.strip().replace('"', '\\"') +
-                                    '. \\n"\n')
+                            f.write('    "' + escape(liner) + '. \\n"\n')
                 f.write('};\n\n')
             f.write("""data 'STR#' (5002, "English") {
     $"0006 0745 6E67 6C69 7368 0541 6772 6565"
@@ -120,13 +117,17 @@ def main(options, args):
                 os.system('hdiutil convert %s.temp.dmg -format ' % dmgFile +
                           'UDZO -imagekey zlib-devel=9 -o %s' % dmgFile)
             os.remove('%s.temp.dmg' % dmgFile)
-    print "Successfully added license to '%s'" % dmgFile
+    if ret == 0:
+        print "Successfully added license to '%s'" % dmgFile
+    else:
+        print "Failed to add license to '%s'" % dmgFile
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.set_usage("""%prog <dmgFile> <licenseFile> [OPTIONS]
   This program adds a software license agreement to a DMG file.
-  It requires Xcode and a plain ascii text <licenseFile>.
+  It requires Xcode and either a plain ascii text <licenseFile>
+  or a <licenseFile.rtf> with the RTF contents.
 
   See --help for more details.""")
     parser.add_option(
